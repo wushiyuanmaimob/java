@@ -13,6 +13,12 @@ public class ThreadTest {
      * 1，2不能得到返回值
      * 1，2，3都不能控制资源
      * 4 可以控制资源 性能稳定。稳定第一
+     *
+     * 线程池详解：
+     *  1、创建
+     *      1）、Executors
+     *          executorService.execute(new Runable01());
+     *      2）、
      */
 
     public static  ExecutorService executorService = Executors.newFixedThreadPool(10);
@@ -41,9 +47,33 @@ public class ThreadTest {
             //应该将所有的多线程异步任务都交个线程池执行
 
             //当前系统中池只有一两个，每个异步任务，提交给线程池即可
+
+            /**
+             * ThreadPoolExecutor 线程池工作顺序
+             * 1）、线程池创建，准备好 core 数量的核心线程，准备接受任务
+             * 1.1、core 满了，就将再进来的任务放入阻塞队列中。空闲的 core 会去阻塞队列获取任务执行
+             * 1.2、阻塞度队列满了，就直接开新的线程执行，最大能开到 max 指定的数量
+             * 1.3、max 满了就拒绝任务
+             * 1.4、max 都执行完成，有很多空闲，在指定的时间 keepAliveTime 以后，释放 max-core 这些线程
+             */
             System.out.println("main...start...");
-            executorService.execute(new Runable01());
-            System.out.println("main...end...");
+//            executorService.execute(new Runable01());
+//            ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(5,
+//                    200,
+//                    10,
+//                    TimeUnit.SECONDS,
+//                    new LinkedBlockingDeque<>(100000),
+//                    Executors.defaultThreadFactory(),
+//                    new ThreadPoolExecutor.AbortPolicy());
+//            threadPoolExecutor.execute(new Runable01());
+            CompletableFuture<Integer> completableFuture = CompletableFuture.supplyAsync(() -> {
+                System.out.println("当前线程： " + Thread.currentThread().getId());
+                int i = 10 / 2;
+                System.out.println("运行结果： " + i);
+
+                return i;
+            }, executorService);
+            System.out.println("main...end..." + completableFuture.get());
 
         }
 
