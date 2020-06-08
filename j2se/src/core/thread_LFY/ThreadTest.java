@@ -72,7 +72,13 @@ public class ThreadTest {
                 System.out.println("运行结果： " + i);
 
                 return i;
-            }, executorService);
+            }, executorService).whenComplete((res, exception) -> {
+                //可以得到异常信息，无法修改返回数据
+                System.out.println("异步任务成功完成了...结果是：" + res + "；异常是：" + exception);
+            }).exceptionally(throwable -> {
+                //出现异常可以直接返回给定结果
+                return 10;
+            });
             System.out.println("main...end..." + completableFuture.get());
 
         }
