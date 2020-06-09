@@ -66,21 +66,123 @@ public class ThreadTest {
 //                    Executors.defaultThreadFactory(),
 //                    new ThreadPoolExecutor.AbortPolicy());
 //            threadPoolExecutor.execute(new Runable01());
-            CompletableFuture<Integer> completableFuture = CompletableFuture.supplyAsync(() -> {
-                System.out.println("当前线程： " + Thread.currentThread().getId());
-                int i = 10 / 2;
-                System.out.println("运行结果： " + i);
+            //##
+//            CompletableFuture<Integer> completableFuture = CompletableFuture.supplyAsync(() -> {
+//                System.out.println("当前线程： " + Thread.currentThread().getId());
+//                int i = 10 / 2;
+//                System.out.println("运行结果： " + i);
+//
+//                return i;
+//            }, executorService).whenComplete((res, exception) -> {
+//                //可以得到异常信息，无法修改返回数据
+//                System.out.println("异步任务成功完成了...结果是：" + res + "；异常是：" + exception);
+//            }).exceptionally(throwable -> {
+//                //出现异常可以直接返回给定结果
+//                return 10;
+//            });
+//            System.out.println("main...end..." + completableFuture.get());
+            //##
+//            CompletableFuture<Integer> completableFuture = CompletableFuture.supplyAsync(() -> {
+//                System.out.println("当前线程： " + Thread.currentThread().getId());
+//                try {
+//                    Thread.sleep(1000);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//                int i = 10 / 2;
+//                System.out.println("运行结果： " + i);
+//                return i;
+//            }, executorService).handle((res, thr) -> {
+//                if (res != null) {
+//                    return res * 2;
+//                }
+//                if (thr != null) {
+//                    return 0;
+//                }
+//                return 0;
+//            });
+//            Integer integer = completableFuture.get();
+//            System.out.println("main...end...");
+            //##
+//            CompletableFuture<Void> voidCompletableFuture = CompletableFuture.supplyAsync(() -> {
+//                System.out.println("当前线程： " + Thread.currentThread().getId());
+//                int i = 10 / 2;
+//                System.out.println("运行结果： " + i);
+//
+//                return i;
+//            }, executorService).thenRunAsync(() -> {
+//                System.out.println("任务2启动了...");
+//            }, executorService);
+//
 
-                return i;
-            }, executorService).whenComplete((res, exception) -> {
-                //可以得到异常信息，无法修改返回数据
-                System.out.println("异步任务成功完成了...结果是：" + res + "；异常是：" + exception);
-            }).exceptionally(throwable -> {
-                //出现异常可以直接返回给定结果
-                return 10;
-            });
-            System.out.println("main...end..." + completableFuture.get());
+            //##
+//            CompletableFuture<Object> future001 = CompletableFuture.supplyAsync(() -> {
+//                System.out.println("任务1线程： " + Thread.currentThread().getId());
+//                try {
+//                    Thread.sleep(20000);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//                int i = 10 / 2;
+//                System.out.println("任务1运行结果： " + i);
+//
+//                return i;
+//            }, executorService);
+//
+//            CompletableFuture<Object> future002 = CompletableFuture.supplyAsync(() -> {
+//                System.out.println("任务2线程：" + Thread.currentThread().getId());
+//                try {
+//                    Thread.sleep(40000);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//                System.out.println("任务2运行结果：" + "hello");
+//                return "hello";
+//            }, executorService);
 
+//            CompletableFuture<String> future = future001.thenCombineAsync(future002, (f1, f2) -> {
+//                System.out.println("任务3线程：" + Thread.currentThread().getId());
+//                try {
+//                    Thread.sleep(20000);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//                String s = f1 + ":" + f2 + "->haha";
+//                System.out.println("任务3运行结果：" + s);
+//                return s;
+//            }, executorService);
+//            CompletableFuture<String> future = future001.applyToEitherAsync(future002, res -> {
+//                System.out.println("任务3线程：" + Thread.currentThread().getId());
+//                try {
+//                    Thread.sleep(40000);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//                String r = res.toString() + "->haha";
+//                System.out.println("任务3运行结果：" + r);
+//                return r;
+//            }, executorService);
+            CompletableFuture<String> futureImg = CompletableFuture.supplyAsync(() -> {
+                try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                System.out.println("img-thread1：" + Thread.currentThread().getId());
+                return "img1";
+            }, executorService);
+            CompletableFuture<String> futureImg2 = CompletableFuture.supplyAsync(() -> {
+                System.out.println("img-thread2：" + Thread.currentThread().getId());
+                return "img2";
+            }, executorService);
+            CompletableFuture<String> futureImg3 = CompletableFuture.supplyAsync(() -> {
+                System.out.println("img-thread3：" + Thread.currentThread().getId());
+                return "img3";
+            }, executorService);
+
+            CompletableFuture<Object> anyOf = CompletableFuture.anyOf(futureImg, futureImg2, futureImg3);
+
+            System.out.println("main...end..." + anyOf.get());
         }
 
     //1）、继承 Thread
